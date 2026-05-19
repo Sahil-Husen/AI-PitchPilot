@@ -72,8 +72,8 @@ const registerUser = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    console.log("email ",email);
-    console.log("otp : ",otp);
+    console.log("email ", email);
+    console.log("otp : ", otp);
 
     if (!email || !otp) {
       return res.status(400).json({
@@ -90,24 +90,25 @@ const verifyOtp = async (req, res) => {
 
     if (user.isVerified) {
       return res.status(400).json({
-        message: "Email already verified",  // fix: was misleading "User already Exists"
+        message: "Email already verified", // fix: was misleading "User already Exists"
       });
     }
 
     if (user.otpExpiry < new Date()) {
       return res.status(400).json({
-        message: "OTP has expired",         // fix: typo "OPT"
+        message: "OTP has expired", // fix: typo "OPT"
       });
     }
 
-    if (user.otp !== otp) {                 // fix: added missing OTP comparison
+    if (user.otp !== otp) {
+      // fix: added missing OTP comparison
       return res.status(400).json({
         message: "Invalid OTP",
       });
     }
 
     user.isVerified = true;
-    user.otp = null;                        // fix: null instead of undefined
+    user.otp = null; // fix: null instead of undefined
     user.otpExpiry = null;
     await user.save();
 
@@ -117,10 +118,63 @@ const verifyOtp = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Error in verifying OTP",
-      error: error.message,                 // fix: was sending full error object
+      error: error.message, // fix: was sending full error object
+    });
+  }
+};
+
+// login
+
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+// console.log(email,password);
+  try {
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and Password required",
+      });
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({
+        message: "Invalid Email Format",
+      });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        message: "User does not exists",
+      });
+    }
+
+    if (!user.isVerified) {
+      return res.status(400).json({
+        message: "User not Verified. Please verify your Email First",
+      });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid Credentials",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Login Successful",
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error logging in",
+      error: error.message,
     });
   }
 };
 
 // authController.js
-export default { register: registerUser, verifyOtp }  // rename key to `register`
+export default { register: registerUser, verifyOtp,loginUser }; // rename key to `register`
