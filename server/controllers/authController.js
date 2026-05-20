@@ -75,8 +75,7 @@ const registerUser = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    console.log("email ", email);
-    console.log("otp : ", otp);
+     
 
     if (!email || !otp) {
       return res.status(400).json({
@@ -118,8 +117,11 @@ const verifyOtp = async (req, res) => {
     await user.save();
 
     return res.status(200).json({
-      token: token,
-      message: "OTP verified successfully",
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+      message: "Email verified successfully!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -167,15 +169,17 @@ const loginUser = async (req, res) => {
       });
     }
 
- 
-
-
     return res.status(200).json({
       message: "Login Successful",
       user: {
         username: user.username,
         email: user.email,
       },
+        _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+      message: 'Login successful!'
     });
   } catch (error) {
     return res.status(500).json({
