@@ -9,11 +9,12 @@ const protectedMiddleware = async (req, res, next) => {
 
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith("Beared")
+      req.headers.authorization.startsWith("Bearer") // ✅ Fix 1
     ) {
-      token = req.headers.authorization.split(' ')[1];
+      token = req.headers.authorization.split(" ")[1];
     }
-    console.log("token is : ",token);
+
+    
 
     if (!token) {
       return res.status(401).json({
@@ -22,7 +23,7 @@ const protectedMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.user = await User.findById(decoded.id).select("-password");
+    req.user = await User.findById(decoded.id).select("-password"); // ✅ Fix 2
 
     if (!req.user) {
       return res.status(404).json({ message: "User not found" });
@@ -35,6 +36,5 @@ const protectedMiddleware = async (req, res, next) => {
       .json({ message: "Not authorized, token failed", error: error.message });
   }
 };
-
 
 export default protectedMiddleware;
