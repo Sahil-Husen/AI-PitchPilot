@@ -75,7 +75,6 @@ const registerUser = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
-     
 
     if (!email || !otp) {
       return res.status(400).json({
@@ -169,17 +168,13 @@ const loginUser = async (req, res) => {
       });
     }
 
+     
     return res.status(200).json({
       message: "Login Successful",
-      user: {
-        username: user.username,
-        email: user.email,
-      },
-        _id: user._id,
-      name: user.name,
+      _id: user._id,
+      username: user.username,
       email: user.email,
       token: generateToken(user._id),
-      message: 'Login successful!'
     });
   } catch (error) {
     return res.status(500).json({
