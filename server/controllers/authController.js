@@ -1,5 +1,8 @@
 import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
+import jwt from "jsonwebtoken";
+import cookie_parser from "cookie-parser";
+import generateToken from "../config/generateToken.js";
 
 const registerUser = async (req, res) => {
   try {
@@ -110,15 +113,18 @@ const verifyOtp = async (req, res) => {
     user.isVerified = true;
     user.otp = null; // fix: null instead of undefined
     user.otpExpiry = null;
+    const token = generateToken(user._id);
+
     await user.save();
 
     return res.status(200).json({
+      token: token,
       message: "OTP verified successfully",
     });
   } catch (error) {
     return res.status(500).json({
       message: "Error in verifying OTP",
-      error: error.message, // fix: was sending full error object
+      error: error.message,
     });
   }
 };
@@ -127,7 +133,7 @@ const verifyOtp = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-// console.log(email,password);
+  // console.log(email,password);
   try {
     if (!email || !password) {
       return res.status(400).json({
@@ -161,6 +167,9 @@ const loginUser = async (req, res) => {
       });
     }
 
+ 
+
+
     return res.status(200).json({
       message: "Login Successful",
       user: {
@@ -177,4 +186,4 @@ const loginUser = async (req, res) => {
 };
 
 // authController.js
-export default { register: registerUser, verifyOtp,loginUser }; // rename key to `register`
+export default { register: registerUser, verifyOtp, loginUser }; // rename key to `register`
