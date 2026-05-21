@@ -30,9 +30,7 @@ function SignUp() {
     }
   };
 
-  console.log("name",username);
-  console.log("email",email);
-  console.log("password",password);
+ 
 
   return (
     <section class="bg-gray-50 dark:bg-gray-900">
