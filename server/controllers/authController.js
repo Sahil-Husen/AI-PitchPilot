@@ -117,7 +117,7 @@ const verifyOtp = async (req, res) => {
 
     return res.status(200).json({
       _id: user._id,
-      username: user.name,
+      username: user.username,
       email: user.email,
       token: generateToken(user._id),
       message: "Email verified successfully!",
