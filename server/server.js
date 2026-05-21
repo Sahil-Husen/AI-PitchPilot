@@ -22,7 +22,7 @@ const app = express();
 app.set('trust proxy', 1) 
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "https://ai-pitch-pilot-dku1.vercel.app/",  // exact Vercel URL
+  origin: process.env.FRONTEND_URL || "https://ai-pitch-pilot-dku1.vercel.app",  // exact Vercel URL
   credentials:true,
    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
