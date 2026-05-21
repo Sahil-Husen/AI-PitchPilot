@@ -1,6 +1,6 @@
 import React from "react";
-import { NavLink, Link } from "react-router-dom";
-import { HomeIcon, Square2StackIcon } from "@heroicons/react/24/outline";
+import { NavLink } from "react-router-dom";
+import { HomeIcon} from "@heroicons/react/24/outline";
 
 const Sidebar = () => {
   return (

@@ -1,6 +1,7 @@
 import express, { urlencoded } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from 'path'
 import authRoutes from "./routes/authRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import connectDB from "./config/db.js";
@@ -19,7 +20,10 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin:process.env.FRONTEND_URL || TRUE,
+  credentials:true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -28,6 +32,30 @@ app.use(globalLimiter);
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/ai", aiLimiter, aiRoutes);
+
+
+// absolute path to build client folder
+const __dirnamePath = path.resolve();
+const clientBuildPath = path.join(__dirnamePath,'client','dist');
+app.use(express.static(clientBuildPath))
+
+//for any route not starting with /api redirect to index.html
+
+app.get('*splat', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(clientBuildPath, 'index.html'))
+  }
+})
+
+
+app.use((err,req,res,next)=>{
+  console.error(err.stack);
+  res.status(500).json({
+    message:"Server error",
+    error:err.message
+  })
+})
+
 app.listen(PORT, () => {
   console.log("Server is running on PORT ", PORT);
 });

@@ -9,7 +9,7 @@ const Navbar = () => {
     return (
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0">
             <div className="text-lg font-medium text-gray-800 hidden md:block">
-                Welcome back, <span className='bg-blue-500 px-[6px] py-[1px] rounded text-white ' >{user?.username || 'User'}</span>
+                Welcome back, <span className='bg-blue-500 px-[6px] py-[1px] rounded text-white ' >{user?.username || user?.email || 'User'}</span>
             
             </div>
             

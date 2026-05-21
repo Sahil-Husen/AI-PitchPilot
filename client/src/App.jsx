@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   return (
     <BrowserRouter>
@@ -22,7 +22,7 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route
           path="/dashboard"
-          element={user ? <Layout /> : <Navigate to="/login" />}
+          element={user ? <Layout /> : <Navigate to="/" />}
         >
           <Route index  element={<Dashboard />} />
         </Route>
