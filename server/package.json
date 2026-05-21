@@ -12,6 +12,7 @@
   "author": "",
   "type": "module",
   "license": "ISC",
+  
   "dependencies": {
     "ai-cold-mail-generator": "file:..",
     "axios": "^1.16.1",
@@ -25,5 +26,7 @@
     "mongoose": "^9.6.2",
     "nodemailer": "^8.0.7",
     "nodemon": "^3.1.14"
+
   }
+  
 }
