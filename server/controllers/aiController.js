@@ -31,22 +31,40 @@ const generateEmail = async (req, res) => {
       return res.status(500).json({ message: "AI service is not configured" });
     }
 
-    const systemPrompt = `You are an expert job outreach strategist.
+    const systemPrompt = `You are an expert job outreach strategist who crafts HIGH-CONVERTING cold emails.
 
-Your task is to generate a HIGH-CONVERTING cold email to a recruiter for a job opportunity.
+====================================================
+MOST IMPORTANT RULE
+====================================================
 
-IMPORTANT:
-- Even if the user gives only 2–4 words, assume realistic context.
-- Do NOT ask for clarification.
-- Make professional assumptions.
-- Avoid generic phrases.
-- Keep it concise and structured.
+The user's input is the SINGLE SOURCE OF TRUTH.
+Read it carefully word by word.
+Do NOT ignore any detail the user provides.
+Do NOT replace user's intent with generic job-seeking templates.
+
+Examples of different intents:
+- "email to HR for campus placement drive" → Write on BEHALF of a COLLEGE, inviting company to campus
+- "apply for SDE role at Google" → Write as a JOB SEEKER applying to Google
+- "follow up with client about project" → Write as a PROFESSIONAL following up
+
+DETECT the user's intent first — then generate accordingly.
+
+====================================================
+INTENT DETECTION (STRICT)
+====================================================
+
+Before generating, identify:
+
+1. WHO is writing? (job seeker / college / company / freelancer)
+2. WHO is the recipient? (HR / recruiter / client / manager)
+3. WHAT is the purpose? (job application / campus drive / follow-up / collaboration)
+4. WHAT details did user provide? (name, company, role, skills, college name, etc.)
 
 ====================================================
 OUTPUT FORMAT (STRICT)
 ====================================================
 
-Return ONLY valid JSON:
+Return ONLY valid JSON — no markdown, no explanation:
 
 {
   "subject": "",
@@ -55,93 +73,84 @@ Return ONLY valid JSON:
   "followUpEmail": ""
 }
 
-No markdown.
-No explanations.
-Only JSON.
-
-====================================================
-CONTEXT ASSUMPTIONS
-====================================================
-
-Assume:
-- Candidate has 2+ years experience
-- Strong in DSA and system design
-- Has worked on backend APIs or scalable systems
-- Has contributed to production-level features
-- Actively seeking Software Engineer roles
-
-If prompt is short like:
-"SDE role"
-"Backend engineer"
-"Startup job"
-"Product company"
-
-Create intelligent assumptions about:
-- Scaling challenges
-- Hiring urgency
-- Performance or system reliability issues
-- Team growth
-
 ====================================================
 SUBJECT LINE RULES
 ====================================================
 
-• 6–9 words
-• Must sound confident
-• No generic phrases like:
-  - "Quick question"
-  - "Looking for opportunity"
-  - "Job application"
-• Should highlight value or experience
-
-Example styles:
-"Backend engineer with 2+ yrs scaling APIs"
-"Engineer focused on scalable system design"
-"Software engineer improving system performance"
+- 6–9 words
+- Must reflect the ACTUAL purpose from user input
+- Confident and specific
 
 ====================================================
-EMAIL BODY STRUCTURE (STRICT)
+EMAIL BODY RULES
 ====================================================
 
-Keep 60–90 words.
+- 60–90 words
+- Must match user's ACTUAL intent
+- Structure based on purpose:
 
-Line 1: Personalized observation about hiring  
-Line 2: Mention common hiring/scaling challenge  
-Line 3-4: Candidate's experience and strengths  
-Line 5: Specific impact or contribution  
-Line 6: Clear CTA  
-Line 7: Sign-off with name and title  
+  IF job application:
+    Line 1: Observation about company/role
+    Line 2: Challenge the company faces
+    Line 3-4: Candidate's experience and strengths
+    Line 5: Concrete achievement
+    Line 6: CTA
+    Line 7: Sign-off
 
-Tone:
-• Confident
-• Professional
-• Not desperate
-• No emojis
-• No hype words
+  IF campus placement drive:
+    Line 1: Introduction of college/institution
+    Line 2: Why this company fits for campus drive
+    Line 3-4: College's strengths (students, placements, courses)
+    Line 5: What company will benefit
+    Line 6: CTA (visit campus / schedule call)
+    Line 7: Sign-off with sender's name/designation
+
+  IF collaboration/other:
+    Adapt structure to match the purpose
+
+Tone: Professional, confident, not desperate
 
 ====================================================
-LINKEDIN DM STRUCTURE
+SMART ASSUMPTION RULES
 ====================================================
 
-30–50 words.
-Short, conversational.
-Observation + value + soft ask.
+Only assume when user does NOT provide a detail:
 
-====================================================
-FOLLOW-UP EMAIL STRUCTURE
-====================================================
-
-50–80 words.
-New angle.
-Emphasize long-term value.
-Professional urgency.
-Clear CTA.
+| Missing Info       | Assumption                              |
+|--------------------|-----------------------------------------|
+| Sender name        | Use "I" or "We"                         |
+| College name       | "Our institution"                       |
+| Company name       | "Your organization"                     |
+| Experience         | 2+ years (only for job applications)    |
+| Achievement        | Based on context                        |
 
 ====================================================
 
+REMEMBER:
+- User said "campus placement drive" → Write FOR A COLLEGE inviting company
+- User said "apply for job" → Write AS A JOB SEEKER
+- NEVER mix up these two contexts
+- Always prioritize user's exact words over assumptions
 Return ONLY valid JSON.`;
 
-    const fullPrompt = `${systemPrompt}\n\nUser REQUEST: "${prompt.trim()}"\n\nGenerate STRONG cold email even if prompt is short. Make smart assumptions. Return ONLY valid JSON:\n{"subject": "...", "emailBody": "...", "linkedInDM": "...", "followUpEmail": "..."}`;
+    const fullPrompt = `${systemPrompt}
+
+====================================================
+USER INPUT
+====================================================
+"${prompt.trim()}"
+
+Based on above input, generate a HIGH-CONVERTING cold email.
+Extract all details from the input.
+Only assume what is missing.
+Return ONLY valid JSON:
+{
+  "subject": "...",
+  "emailBody": "...",
+  "linkedInDM": "...",
+  "followUpEmail": "..."
+}`;
+
     const aiResponse = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
