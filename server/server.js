@@ -22,8 +22,13 @@ const app = express();
 app.set('trust proxy', 1) 
 
 app.use(cors({
-  origin: "https://ai-pitch-pilot-9acr.vercel.app"  // exact Vercel URL
+  origin: "https://ai-pitch-pilot-dku1.vercel.app/" || "",  // exact Vercel URL
+  credentials:true,
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }))
+
+app.options('*',cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
