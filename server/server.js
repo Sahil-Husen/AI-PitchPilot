@@ -21,9 +21,8 @@ connectDB();
 
 const app = express();
 app.use(cors({
- origin: process.env.FRONTEND_URL || true,
-  credentials:true
-}));
+  origin: "https://ai-pitch-pilot-9acr.vercel.app"  // exact Vercel URL
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
