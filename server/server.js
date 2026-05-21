@@ -35,17 +35,17 @@ app.use("/api/ai", aiLimiter, aiRoutes);
 
 
 // absolute path to build client folder
-const __dirnamePath = path.resolve();
-const clientBuildPath = path.join(__dirnamePath,'client','dist');
-app.use(express.static(clientBuildPath))
+// const __dirnamePath = path.resolve();
+// const clientBuildPath = path.join(__dirnamePath,'client','dist');
+// app.use(express.static(clientBuildPath))
 
-//for any route not starting with /api redirect to index.html
+// //for any route not starting with /api redirect to index.html
 
-app.get('*splat', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(clientBuildPath, 'index.html'))
-  }
-})
+// app.get('*splat', (req, res) => {
+//   if (!req.path.startsWith('/api')) {
+//     res.sendFile(path.join(clientBuildPath, 'index.html'))
+//   }
+// })
 
 
 app.use((err,req,res,next)=>{
