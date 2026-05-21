@@ -5,6 +5,7 @@ import path from 'path'
 import authRoutes from "./routes/authRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import connectDB from "./config/db.js";
+import crypto from "crypto";
 import {
   globalLimiter,
   authLimiter,
@@ -12,7 +13,7 @@ import {
 } from "./middleware/rateLimitter.js";
 
 
-import crypto from "crypto";
+
 global.crypto = crypto;
 
 const PORT = process.env.PORT || 3000;
