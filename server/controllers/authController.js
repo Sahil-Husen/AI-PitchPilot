@@ -79,7 +79,7 @@ const verifyOtp = async (req, res) => {
     if (!email || !otp) {
       return res.status(400).json({
         message: "Email and OTP are required",
-      });
+      }); 
     }
 
     const user = await User.findOne({ email });
