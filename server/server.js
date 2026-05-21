@@ -11,6 +11,10 @@ import {
   aiLimiter,
 } from "./middleware/rateLimitter.js";
 
+
+import crypto from "crypto";
+global.crypto = crypto;
+
 const PORT = process.env.PORT || 3000;
 
 // fetch ENV variables
