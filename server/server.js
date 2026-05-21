@@ -18,7 +18,7 @@ dotenv.config();
 
 //db connectiion
 connectDB();
-
+app.set('trust proxy', 1) 
 const app = express();
 app.use(cors({
   origin: "https://ai-pitch-pilot-9acr.vercel.app"  // exact Vercel URL
